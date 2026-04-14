@@ -18,9 +18,7 @@ const defaultUser = {
 let getUserSpy: jest.SpyInstance;
 
 beforeEach(() => {
-  getUserSpy = jest
-    .spyOn(UsersClient.prototype, 'getUser')
-    .mockResolvedValue(defaultUser);
+  getUserSpy = jest.spyOn(UsersClient.prototype, 'getUser').mockResolvedValue(defaultUser);
 });
 
 afterEach(() => {
@@ -142,17 +140,13 @@ describe('orders-api routes', () => {
     });
 
     it('responds 400 when items array is empty', async () => {
-      const res = await request(app)
-        .post('/api/v1/orders')
-        .send({ userId: 'usr_001', items: [] });
+      const res = await request(app).post('/api/v1/orders').send({ userId: 'usr_001', items: [] });
       expect(res.status).toBe(400);
       expect(res.body.error).toBe('VALIDATION_ERROR');
     });
 
     it('responds 400 when items key is missing entirely', async () => {
-      const res = await request(app)
-        .post('/api/v1/orders')
-        .send({ userId: 'usr_001' });
+      const res = await request(app).post('/api/v1/orders').send({ userId: 'usr_001' });
       expect(res.status).toBe(400);
       expect(res.body.error).toBe('VALIDATION_ERROR');
     });
