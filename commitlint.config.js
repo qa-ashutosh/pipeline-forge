@@ -33,6 +33,7 @@ const config = {
     'body-leading-blank': [1, 'always'],
     'footer-leading-blank': [1, 'always'],
     'header-max-length': [2, 'always', 120],
+    'body-max-line-length': [0],
   },
 };
 

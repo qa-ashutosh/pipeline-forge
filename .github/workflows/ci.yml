@@ -19,6 +19,7 @@ concurrency:
 
 env:
   NODE_VERSION: "24"
+  HUSKY: 0 # Disable Husky Git hooks in CI environment
 
 jobs:
   # ─────────────────────────────────────────────────────────────────

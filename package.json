@@ -3,6 +3,7 @@
   "version": "0.0.0-semantically-released",
   "description": "Enterprise-grade CI/CD pipeline patterns — fork-ready, multi-tool, production-proven",
   "private": true,
+  "type": "module",
   "workspaces": [
     "services/*"
   ],

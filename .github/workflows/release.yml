@@ -43,4 +43,5 @@ jobs:
       - name: Run semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HUSKY: 0 # Disable Husky Git hooks in CI environment
         run: npx semantic-release
