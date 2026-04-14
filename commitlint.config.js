@@ -7,33 +7,24 @@ const config = {
       2,
       'always',
       [
-        'feat',     // new feature
-        'fix',      // bug fix
-        'docs',     // documentation only
-        'style',    // formatting, whitespace (no logic change)
+        'feat', // new feature
+        'fix', // bug fix
+        'docs', // documentation only
+        'style', // formatting, whitespace (no logic change)
         'refactor', // code change that is neither fix nor feature
-        'perf',     // performance improvement
-        'test',     // adding or updating tests
-        'build',    // changes to build system or dependencies
-        'ci',       // changes to CI/CD configuration
-        'chore',    // maintenance tasks
-        'revert',   // revert a previous commit
+        'perf', // performance improvement
+        'test', // adding or updating tests
+        'build', // changes to build system or dependencies
+        'ci', // changes to CI/CD configuration
+        'chore', // maintenance tasks
+        'revert', // revert a previous commit
       ],
     ],
     // scope-enum: valid scopes map to services and cross-cutting concerns
     'scope-enum': [
       1, // warn only — don't block if scope is not in this list
       'always',
-      [
-        'users-api',
-        'orders-api',
-        'ci',
-        'docker',
-        'docs',
-        'deps',
-        'release',
-        'root',
-      ],
+      ['users-api', 'orders-api', 'ci', 'docker', 'docs', 'deps', 'release', 'root'],
     ],
     'subject-case': [2, 'never', ['start-case', 'pascal-case', 'upper-case']],
     'subject-empty': [2, 'never'],

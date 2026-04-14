@@ -28,8 +28,8 @@
 
 ```
 ┌────────────────────────────────────────────────────────┐
-│                    pipeline-forge                      │
-│                  (npm workspace)                       │
+│                  pipeline-forge                        │
+│                 (npm  workspace)                       │
 │                                                        │
 │   ┌──────────────────┐    ┌────────────────────────┐   │
 │   │   users-api      │    │    orders-api          │   │
@@ -40,13 +40,14 @@
 │   │  POST /users     │    │  GET  /orders/enriched │   │
 │   │  GET  /health    │    │  POST /orders          │   │
 │   │                  │    │  GET  /health          │   │
+│   │                  │    │                        │   │
 │   │  Provider (Pact) │    │  Consumer (Pact)       │   │
 │   └──────────────────┘    └────────────────────────┘   │
 │                                                        │
-│   ┌─────────────────────────────────────────────────┐  │
-│   │   Pact Broker  :9292  (self-hosted OSS)         │  │
-│   │   PostgreSQL   :5432  (Pact Broker storage)     │  │
-│   └─────────────────────────────────────────────────┘  │
+│   ┌────────────────────────────────────────────────┐   │
+│   │   Pact Broker  :9292  (self-hosted OSS)        │   │
+│   │   PostgreSQL   :5432  (Pact Broker storage)    │   │
+│   └────────────────────────────────────────────────┘   │
 └────────────────────────────────────────────────────────┘
 ```
 
@@ -104,15 +105,15 @@ Each stage is its own PR — merged following the `feature/stage-XX-*` → `deve
 
 > **Why this order?** The stages follow a typical enterprise CI/CD maturity curve: start with a solid foundation and local dev experience, layer in build reproducibility and contract testing, then progressively add security gates, multi-tool CI, GitOps deployment, observability, and finally release engineering with signing and provenance. Each stage builds on the previous one, mirroring how a real platform team would evolve a pipeline incrementally.
 
-| Stage | Branch | Focus | Key tools | Status |
-|---|---|---|---|---|
-| 01 | `feature/stage-01-foundation` | Repo scaffold, CI foundation, TypeScript services | GitHub Actions, Node 24, Husky, semantic-release | ✅ **Current** |
-| 02 | `feature/stage-02-build-test` | Multi-stage Docker build, Jest, Supertest, Pact contract tests | Docker, ts-jest, Pact OSS | 🔜 |
-| 03 | `feature/stage-03-security` | SAST, container scanning, dependency audit | Trivy, OWASP, SonarQube | 🔜 |
-| 04 | `feature/stage-04-jenkins` | Declarative Jenkinsfile, shared libraries, parallel stages | Jenkins, Groovy, Blue Ocean | 🔜 |
-| 05 | `feature/stage-05-gitops` | Helm charts, ArgoCD, environment promotion, smoke tests | Helm, ArgoCD, kind | 🔜 |
-| 06 | `feature/stage-06-observability` | Prometheus metrics, Grafana dashboards, DORA metrics, k6 | Prometheus, Grafana, k6 | 🔜 |
-| 07 | `feature/stage-07-release` | Semantic versioning, SBOM, container signing, provenance | Syft, Cosign, semantic-release | 🔜 |
+| Stage | Branch                           | Focus                                                          | Key tools                                        | Status         |
+| ----- | -------------------------------- | -------------------------------------------------------------- | ------------------------------------------------ | -------------- |
+| 01    | `feature/stage-01-foundation`    | Repo scaffold, CI foundation, TypeScript services              | GitHub Actions, Node 24, Husky, semantic-release | ✅ **Current** |
+| 02    | `feature/stage-02-build-test`    | Multi-stage Docker build, Jest, Supertest, Pact contract tests | Docker, ts-jest, Pact OSS                        | 🔜             |
+| 03    | `feature/stage-03-security`      | SAST, container scanning, dependency audit                     | Trivy, OWASP, SonarQube                          | 🔜             |
+| 04    | `feature/stage-04-jenkins`       | Declarative Jenkinsfile, shared libraries, parallel stages     | Jenkins, Groovy, Blue Ocean                      | 🔜             |
+| 05    | `feature/stage-05-gitops`        | Helm charts, ArgoCD, environment promotion, smoke tests        | Helm, ArgoCD, kind                               | 🔜             |
+| 06    | `feature/stage-06-observability` | Prometheus metrics, Grafana dashboards, DORA metrics, k6       | Prometheus, Grafana, k6                          | 🔜             |
+| 07    | `feature/stage-07-release`       | Semantic versioning, SBOM, container signing, provenance       | Syft, Cosign, semantic-release                   | 🔜             |
 
 ---
 
@@ -120,55 +121,55 @@ Each stage is its own PR — merged following the `feature/stage-XX-*` → `deve
 
 ### Services
 
-| Tool | Version | Purpose |
-|---|---|---|
-| Node.js | 24 LTS (Krypton) | Runtime |
-| TypeScript | 5.x | Language |
-| Express | 4.x | HTTP framework |
-| Helmet | 8.x | Security headers |
+| Tool       | Version          | Purpose          |
+| ---------- | ---------------- | ---------------- |
+| Node.js    | 24 LTS (Krypton) | Runtime          |
+| TypeScript | 5.x              | Language         |
+| Express    | 4.x              | HTTP framework   |
+| Helmet     | 8.x              | Security headers |
 
 ### CI/CD
 
-| Tool | Purpose |
-|---|---|
-| GitHub Actions | Primary CI — build, test, release |
-| Jenkins | Secondary CI — enterprise Declarative pipeline (Stage 04) |
-| semantic-release | Automated versioning + changelog |
-| Conventional Commits | Commit message standard |
-| Husky + commitlint | Local enforcement of commit standard |
+| Tool                 | Purpose                                                   |
+| -------------------- | --------------------------------------------------------- |
+| GitHub Actions       | Primary CI — build, test, release                         |
+| Jenkins              | Secondary CI — enterprise Declarative pipeline (Stage 04) |
+| semantic-release     | Automated versioning + changelog                          |
+| Conventional Commits | Commit message standard                                   |
+| Husky + commitlint   | Local enforcement of commit standard                      |
 
 ### Testing
 
-| Tool | Layer | Stage |
-|---|---|---|
-| Jest + ts-jest | Unit + integration | 01 |
-| Supertest | HTTP route integration | 01 |
-| Pact (consumer-driven) | Contract testing | 02 |
-| k6 | Load testing + SLOs | 06 |
+| Tool                   | Layer                  | Stage |
+| ---------------------- | ---------------------- | ----- |
+| Jest + ts-jest         | Unit + integration     | 01    |
+| Supertest              | HTTP route integration | 01    |
+| Pact (consumer-driven) | Contract testing       | 02    |
+| k6                     | Load testing + SLOs    | 06    |
 
 ### Security
 
-| Tool | Purpose | Stage |
-|---|---|---|
-| Trivy | Container CVE scanning | 03 |
-| OWASP Dependency-Check | Dependency vulnerability audit | 03 |
-| SonarQube | SAST + code quality gate | 03 |
+| Tool                   | Purpose                        | Stage |
+| ---------------------- | ------------------------------ | ----- |
+| Trivy                  | Container CVE scanning         | 03    |
+| OWASP Dependency-Check | Dependency vulnerability audit | 03    |
+| SonarQube              | SAST + code quality gate       | 03    |
 
 ### Observability
 
-| Tool | Purpose | Stage |
-|---|---|---|
-| Prometheus | Metrics scraping | 06 |
-| Grafana | Dashboards (DORA metrics) | 06 |
-| Alertmanager | Alerting rules | 06 |
+| Tool         | Purpose                   | Stage |
+| ------------ | ------------------------- | ----- |
+| Prometheus   | Metrics scraping          | 06    |
+| Grafana      | Dashboards (DORA metrics) | 06    |
+| Alertmanager | Alerting rules            | 06    |
 
 ### Release engineering
 
-| Tool | Purpose | Stage |
-|---|---|---|
-| Syft | SBOM generation | 07 |
-| Cosign | Container image signing | 07 |
-| GitHub Releases | Versioned release artefacts | 01 |
+| Tool            | Purpose                     | Stage |
+| --------------- | --------------------------- | ----- |
+| Syft            | SBOM generation             | 07    |
+| Cosign          | Container image signing     | 07    |
+| GitHub Releases | Versioned release artefacts | 01    |
 
 ---
 

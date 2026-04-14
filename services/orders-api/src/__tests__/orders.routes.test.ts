@@ -1,27 +1,69 @@
 import request from 'supertest';
 import { createApp } from '../app';
+import { UsersClient } from '../clients/users.client';
 
-// UsersClient is mocked so route tests have no external dependency
-jest.mock('../clients/users.client', () => ({
-  UsersClient: jest.fn().mockImplementation(() => ({
-    getUser: jest.fn().mockResolvedValue({
-      id: 'usr_001',
-      name: 'Alice Nguyen',
-      email: 'alice@pipeline-forge.dev',
-    }),
-  })),
-}));
+// The route module creates a singleton `const usersClient = new UsersClient()` at load time.
+// Mocking the constructor won't affect that already-created instance.
+// Spying on the prototype affects all instances including the singleton — correct pattern here.
+jest.mock('../clients/users.client');
+
+const app = createApp();
+
+const defaultUser = {
+  id: 'usr_001',
+  name: 'Alice Nguyen',
+  email: 'alice@pipeline-forge.dev',
+};
+
+let getUserSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  getUserSpy = jest
+    .spyOn(UsersClient.prototype, 'getUser')
+    .mockResolvedValue(defaultUser);
+});
+
+afterEach(() => {
+  getUserSpy.mockRestore();
+});
 
 describe('orders-api routes', () => {
-  const app = createApp();
+  // ─── Health ───────────────────────────────────────────────────────────────
 
   describe('GET /api/v1/health', () => {
     it('responds 200 with service status', async () => {
       const res = await request(app).get('/api/v1/health');
       expect(res.status).toBe(200);
       expect(res.body).toMatchObject({ service: 'orders-api', status: 'ok' });
+      expect(res.body).toHaveProperty('timestamp');
+    });
+
+    it('reflects npm_package_version env var when set', async () => {
+      process.env['npm_package_version'] = '1.2.3';
+      const res = await request(app).get('/api/v1/health');
+      expect(res.body.version).toBe('1.2.3');
+      delete process.env['npm_package_version'];
+    });
+
+    it('falls back to 0.0.0 when npm_package_version is not set', async () => {
+      delete process.env['npm_package_version'];
+      const res = await request(app).get('/api/v1/health');
+      expect(res.body.version).toBe('0.0.0');
     });
   });
+
+  // ─── Unknown route — covers app.ts 404 fallback handler ──────────────────
+
+  describe('unknown route', () => {
+    it('responds 404 with NOT_FOUND for undefined routes', async () => {
+      const res = await request(app).get('/api/v1/does-not-exist');
+      expect(res.status).toBe(404);
+      expect(res.body.error).toBe('NOT_FOUND');
+      expect(res.body.message).toBe('Route not found');
+    });
+  });
+
+  // ─── Orders list ──────────────────────────────────────────────────────────
 
   describe('GET /api/v1/orders', () => {
     it('responds 200 with array of orders', async () => {
@@ -31,6 +73,8 @@ describe('orders-api routes', () => {
       expect(res.body.data.length).toBeGreaterThan(0);
     });
   });
+
+  // ─── Single order ─────────────────────────────────────────────────────────
 
   describe('GET /api/v1/orders/:id', () => {
     it('responds 200 with a specific order', async () => {
@@ -46,6 +90,8 @@ describe('orders-api routes', () => {
     });
   });
 
+  // ─── Enriched order ───────────────────────────────────────────────────────
+
   describe('GET /api/v1/orders/:id/enriched', () => {
     it('responds 200 with order enriched with user data', async () => {
       const res = await request(app).get('/api/v1/orders/ord_001/enriched');
@@ -57,8 +103,22 @@ describe('orders-api routes', () => {
     it('responds 404 when order does not exist', async () => {
       const res = await request(app).get('/api/v1/orders/ord_999/enriched');
       expect(res.status).toBe(404);
+      expect(res.body.error).toBe('NOT_FOUND');
+    });
+
+    it('responds 502 when users-api returns null — covers DEPENDENCY_ERROR branch', async () => {
+      // Override prototype spy for this test only — affects the singleton instance
+      getUserSpy.mockResolvedValueOnce(null);
+
+      const res = await request(app).get('/api/v1/orders/ord_001/enriched');
+      expect(res.status).toBe(502);
+      expect(res.body.error).toBe('DEPENDENCY_ERROR');
+      expect(res.body.message).toContain('usr_001');
+      expect(res.body.statusCode).toBe(502);
     });
   });
+
+  // ─── Create order ─────────────────────────────────────────────────────────
 
   describe('POST /api/v1/orders', () => {
     it('responds 201 and creates an order', async () => {
@@ -86,6 +146,15 @@ describe('orders-api routes', () => {
         .post('/api/v1/orders')
         .send({ userId: 'usr_001', items: [] });
       expect(res.status).toBe(400);
+      expect(res.body.error).toBe('VALIDATION_ERROR');
+    });
+
+    it('responds 400 when items key is missing entirely', async () => {
+      const res = await request(app)
+        .post('/api/v1/orders')
+        .send({ userId: 'usr_001' });
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe('VALIDATION_ERROR');
     });
   });
 });

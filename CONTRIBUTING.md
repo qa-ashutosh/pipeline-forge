@@ -40,13 +40,13 @@ There are several meaningful ways to contribute:
 
 ### Prerequisites
 
-| Tool | Minimum version |
-|---|---|
-| Node.js | 24.x LTS |
-| npm | 10.x |
-| Docker | 24.x |
+| Tool           | Minimum version                                                 |
+| -------------- | --------------------------------------------------------------- |
+| Node.js        | 24.x LTS                                                        |
+| npm            | 10.x                                                            |
+| Docker         | 24.x                                                            |
 | Docker Compose | v2.x (the `docker compose` CLI plugin, not `docker-compose` v1) |
-| Git | 2.40+ |
+| Git            | 2.40+                                                           |
 
 ### First-time setup
 
@@ -106,17 +106,17 @@ All commits **must** follow [Conventional Commits](https://www.conventionalcommi
 
 ### Valid types
 
-| Type | When to use | Triggers release? |
-|---|---|---|
-| `feat` | New feature or pipeline pattern | Minor |
-| `fix` | Bug fix | Patch |
-| `docs` | Documentation only | No |
-| `ci` | CI/CD config changes | No |
-| `test` | Test additions or updates | No |
-| `refactor` | Code refactor, no behaviour change | Patch |
-| `chore` | Dependency updates, maintenance | No |
-| `perf` | Performance improvement | Patch |
-| `revert` | Reverting a previous commit | Patch |
+| Type       | When to use                        | Triggers release? |
+| ---------- | ---------------------------------- | ----------------- |
+| `feat`     | New feature or pipeline pattern    | Minor             |
+| `fix`      | Bug fix                            | Patch             |
+| `docs`     | Documentation only                 | No                |
+| `ci`       | CI/CD config changes               | No                |
+| `test`     | Test additions or updates          | No                |
+| `refactor` | Code refactor, no behaviour change | Patch             |
+| `chore`    | Dependency updates, maintenance    | No                |
+| `perf`     | Performance improvement            | Patch             |
+| `revert`   | Reverting a previous commit        | Patch             |
 
 ### Examples
 

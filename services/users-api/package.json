@@ -4,6 +4,7 @@
   "description": "Users microservice — provider in the Pact contract testing setup",
   "private": true,
   "main": "dist/index.js",
+  "type": "module",
   "scripts": {
     "build": "tsc --noEmit false",
     "build:check": "tsc --noEmit",

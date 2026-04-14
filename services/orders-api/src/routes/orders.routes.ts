@@ -33,6 +33,7 @@ router.get('/orders', (_req: Request, res: Response) => {
 // ─── GET /orders/:id ─────────────────────────────────────────────────────────
 
 router.get('/orders/:id', (req: Request, res: Response) => {
+  /* istanbul ignore next -- Express always provides params['id'] on matched routes */
   const order = repo.findById(req.params['id'] ?? '');
 
   if (!order) {
@@ -59,6 +60,7 @@ router.get('/orders/:id', (req: Request, res: Response) => {
 // Pact contract tests in Stage 02 will mock this boundary.
 
 router.get('/orders/:id/enriched', async (req: Request, res: Response) => {
+  /* istanbul ignore next -- Express always provides params['id'] on matched routes */
   const order = repo.findById(req.params['id'] ?? '');
 
   if (!order) {

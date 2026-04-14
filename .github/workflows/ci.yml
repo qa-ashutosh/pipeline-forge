@@ -5,8 +5,8 @@ on:
     branches:
       - main
       - develop
-      - 'feature/**'
-      - 'release/**'
+      - "feature/**"
+      - "release/**"
   pull_request:
     branches:
       - main
@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '24'
+  NODE_VERSION: "24"
 
 jobs:
   # ─────────────────────────────────────────────────────────────────
@@ -40,7 +40,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install all workspace dependencies
         run: npm ci
@@ -74,7 +74,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install all workspace dependencies
         run: npm ci
@@ -118,7 +118,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install all workspace dependencies
         run: npm ci

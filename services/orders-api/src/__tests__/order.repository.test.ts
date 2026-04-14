@@ -53,11 +53,11 @@ describe('OrderRepository', () => {
       const order = repo.create({
         userId: 'usr_001',
         items: [
-          { productId: 'prod_x', name: 'Widget', quantity: 2, unitPrice: 10.00 },
-          { productId: 'prod_y', name: 'Gadget', quantity: 1, unitPrice: 5.50 },
+          { productId: 'prod_x', name: 'Widget', quantity: 2, unitPrice: 10.0 },
+          { productId: 'prod_y', name: 'Gadget', quantity: 1, unitPrice: 5.5 },
         ],
       });
-      expect(order.total).toBe(25.50);
+      expect(order.total).toBe(25.5);
       expect(order.status).toBe('pending');
       expect(order.userId).toBe('usr_001');
     });
@@ -73,9 +73,9 @@ describe('OrderRepository', () => {
     it('rounds total to 2 decimal places', () => {
       const order = repo.create({
         userId: 'usr_001',
-        items: [{ productId: 'prod_r', name: 'Item', quantity: 3, unitPrice: 0.10 }],
+        items: [{ productId: 'prod_r', name: 'Item', quantity: 3, unitPrice: 0.1 }],
       });
-      expect(order.total).toBe(0.30);
+      expect(order.total).toBe(0.3);
     });
   });
 
@@ -83,7 +83,7 @@ describe('OrderRepository', () => {
     it('restores seed state after mutations', () => {
       repo.create({
         userId: 'usr_003',
-        items: [{ productId: 'x', name: 'X', quantity: 1, unitPrice: 1.00 }],
+        items: [{ productId: 'x', name: 'X', quantity: 1, unitPrice: 1.0 }],
       });
       expect(repo.findAll()).toHaveLength(3);
       repo.reset();

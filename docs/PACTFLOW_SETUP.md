@@ -8,14 +8,14 @@ If you prefer the hosted **PactFlow** dashboard (public URL, polished UI), you c
 
 ## Why self-hosted is the default
 
-| Concern | Self-hosted | PactFlow Free |
-|---|---|---|
-| Zero external accounts needed | ✅ | ❌ needs signup |
-| Works on fork without config | ✅ | ❌ needs new tokens |
-| Unlimited services | ✅ | ❌ 2 integrations on free tier |
-| Fully offline / air-gapped | ✅ | ❌ |
-| Polished hosted dashboard URL | ❌ localhost only | ✅ |
-| Bi-directional contract testing | ❌ | ✅ |
+| Concern                         | Self-hosted       | PactFlow Free                  |
+| ------------------------------- | ----------------- | ------------------------------ |
+| Zero external accounts needed   | ✅                | ❌ needs signup                |
+| Works on fork without config    | ✅                | ❌ needs new tokens            |
+| Unlimited services              | ✅                | ❌ 2 integrations on free tier |
+| Fully offline / air-gapped      | ✅                | ❌                             |
+| Polished hosted dashboard URL   | ❌ localhost only | ✅                             |
+| Bi-directional contract testing | ❌                | ✅                             |
 
 ---
 
@@ -37,11 +37,11 @@ Copy the token value.
 
 In your repo **Settings → Secrets and variables → Actions**, add:
 
-| Secret name | Value |
-|---|---|
+| Secret name            | Value                          |
+| ---------------------- | ------------------------------ |
 | `PACT_BROKER_BASE_URL` | `https://yourname.pactflow.io` |
-| `PACT_BROKER_TOKEN` | your PactFlow API token |
-| `USE_PACTFLOW` | `true` |
+| `PACT_BROKER_TOKEN`    | your PactFlow API token        |
+| `USE_PACTFLOW`         | `true`                         |
 
 Then update your `docker-compose.yml` for local dev — comment out the `pact-broker` and `pact-broker-db` services and set:
 

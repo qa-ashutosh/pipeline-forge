@@ -1,4 +1,4 @@
-import type { UserSummary } from '../types/order.types.js';
+import type { UserSummary } from '../types/order.types';
 
 // This class is the exact boundary where Pact contract tests will be written in Stage 02.
 // It defines what orders-api *expects* from users-api — which becomes the Pact contract.

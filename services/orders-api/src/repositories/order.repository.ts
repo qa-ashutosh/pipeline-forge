@@ -7,9 +7,7 @@ const SEED_ORDERS: Order[] = [
     status: 'delivered',
     total: 149.99,
     createdAt: '2025-02-01T10:00:00.000Z',
-    items: [
-      { productId: 'prod_a1', name: 'Mechanical Keyboard', quantity: 1, unitPrice: 149.99 },
-    ],
+    items: [{ productId: 'prod_a1', name: 'Mechanical Keyboard', quantity: 1, unitPrice: 149.99 }],
   },
   {
     id: 'ord_002',
@@ -17,9 +15,7 @@ const SEED_ORDERS: Order[] = [
     status: 'pending',
     total: 59.98,
     createdAt: '2025-02-10T14:30:00.000Z',
-    items: [
-      { productId: 'prod_b2', name: 'USB-C Hub', quantity: 2, unitPrice: 29.99 },
-    ],
+    items: [{ productId: 'prod_b2', name: 'USB-C Hub', quantity: 2, unitPrice: 29.99 }],
   },
 ];
 

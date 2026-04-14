@@ -35,13 +35,13 @@ Testing in pipeline-forge follows three core principles:
      └───────────────────────────────────┘
 ```
 
-| Layer | Tool | Runs in | Gate |
-|---|---|---|---|
-| Unit | Jest + ts-jest | Pre-commit, CI | 80% coverage minimum |
-| Integration | Jest + Supertest | CI | All routes tested |
-| Contract | Pact + OSS Broker | CI | Provider must verify before deploy |
-| Load | k6 | CI (Stage 06) | p95 < 500ms, error rate < 1% |
-| Smoke | curl / k6 | Post-deploy | Health endpoint 200 |
+| Layer       | Tool              | Runs in        | Gate                               |
+| ----------- | ----------------- | -------------- | ---------------------------------- |
+| Unit        | Jest + ts-jest    | Pre-commit, CI | 80% coverage minimum               |
+| Integration | Jest + Supertest  | CI             | All routes tested                  |
+| Contract    | Pact + OSS Broker | CI             | Provider must verify before deploy |
+| Load        | k6                | CI (Stage 06)  | p95 < 500ms, error rate < 1%       |
+| Smoke       | curl / k6         | Post-deploy    | Health endpoint 200                |
 
 ---
 
@@ -120,8 +120,8 @@ orders-api (consumer)          Pact Broker              users-api (provider)
 
 The contract covers the `GET /api/v1/users/:id` interaction:
 
-- **Request:** `GET /api/v1/users/usr_001`  
-- **Response:** `200`, body contains `{ data: { id, name, email } }`  
+- **Request:** `GET /api/v1/users/usr_001`
+- **Response:** `200`, body contains `{ data: { id, name, email } }`
 - **On 404:** Response contains `{ error: 'NOT_FOUND' }`
 
 ### Optional: PactFlow
@@ -136,11 +136,11 @@ See `docs/PACTFLOW_SETUP.md` for swapping the self-hosted broker for PactFlow Sa
 **Location:** `tests/load/`  
 **Thresholds (SLOs):**
 
-| Metric | Threshold |
-|---|---|
-| http_req_duration p(95) | < 500ms |
-| http_req_failed | < 1% |
-| http_reqs | > 50/s sustained |
+| Metric                  | Threshold        |
+| ----------------------- | ---------------- |
+| http_req_duration p(95) | < 500ms          |
+| http_req_failed         | < 1%             |
+| http_reqs               | > 50/s sustained |
 
 Load tests run in CI against a `staging` environment after successful deployment (Stage 05+). They do not run on every PR — only on merges to `develop` or `main`.
 
@@ -164,15 +164,15 @@ A failing smoke test triggers an automatic rollback (Stage 05, ArgoCD).
 
 ## 8. Quality Gates Summary
 
-| Gate | Enforced by | Blocks |
-|---|---|---|
-| Commit message format | commitlint + Husky | Local commit |
-| Code formatting | Prettier + lint-staged | Local commit |
-| Lint errors | ESLint (0 warnings) | CI |
-| TypeScript compile | `tsc --noEmit` | CI |
-| Unit test pass | Jest | CI |
-| Coverage threshold (80%) | Jest | CI |
-| Contract verified | Pact | CI |
-| Security scan pass | Trivy + OWASP (Stage 03) | CI |
-| Can-I-Deploy | Pact Broker | CI deploy step |
-| Smoke test | curl / k6 | Post-deploy |
+| Gate                     | Enforced by              | Blocks         |
+| ------------------------ | ------------------------ | -------------- |
+| Commit message format    | commitlint + Husky       | Local commit   |
+| Code formatting          | Prettier + lint-staged   | Local commit   |
+| Lint errors              | ESLint (0 warnings)      | CI             |
+| TypeScript compile       | `tsc --noEmit`           | CI             |
+| Unit test pass           | Jest                     | CI             |
+| Coverage threshold (80%) | Jest                     | CI             |
+| Contract verified        | Pact                     | CI             |
+| Security scan pass       | Trivy + OWASP (Stage 03) | CI             |
+| Can-I-Deploy             | Pact Broker              | CI deploy step |
+| Smoke test               | curl / k6                | Post-deploy    |

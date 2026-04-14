@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  NODE_VERSION: '24'
+  NODE_VERSION: "24"
 
 jobs:
   release:
@@ -20,9 +20,9 @@ jobs:
     # Only run on main branch, not forks
     if: github.repository_owner != '' && !github.event.repository.fork
     permissions:
-      contents: write       # to create tags and releases
-      issues: write         # to comment on released issues
-      pull-requests: write  # to comment on released PRs
+      contents: write # to create tags and releases
+      issues: write # to comment on released issues
+      pull-requests: write # to comment on released PRs
 
     steps:
       - name: Checkout repository (full history required for semantic-release)
@@ -35,7 +35,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
