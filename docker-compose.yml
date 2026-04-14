@@ -1,0 +1,121 @@
+name: pipeline-forge
+
+# ─── Networks ─────────────────────────────────────────────────────────────────
+networks:
+  forge-net:
+    driver: bridge
+
+# ─── Volumes ──────────────────────────────────────────────────────────────────
+volumes:
+  pact-broker-db:
+    driver: local
+
+services:
+  # ─── users-api ──────────────────────────────────────────────────────────────
+  users-api:
+    build:
+      context: .
+      dockerfile: services/users-api/Dockerfile
+      target: development
+    image: pipeline-forge/users-api:dev
+    container_name: pf-users-api
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      CORS_ORIGIN: "*"
+    volumes:
+      # Mount source for hot-reload in dev target only
+      - ./services/users-api/src:/app/services/users-api/src:ro
+    networks:
+      - forge-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3001/api/v1/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # ─── orders-api ─────────────────────────────────────────────────────────────
+  orders-api:
+    build:
+      context: .
+      dockerfile: services/orders-api/Dockerfile
+      target: development
+    image: pipeline-forge/orders-api:dev
+    container_name: pf-orders-api
+    ports:
+      - "3002:3002"
+    environment:
+      NODE_ENV: development
+      PORT: 3002
+      CORS_ORIGIN: "*"
+      USERS_API_URL: http://users-api:3001
+    volumes:
+      - ./services/orders-api/src:/app/services/orders-api/src:ro
+    networks:
+      - forge-net
+    depends_on:
+      users-api:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3002/api/v1/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # ─── Pact Broker DB (PostgreSQL) ─────────────────────────────────────────────
+  # Using postgres:16-alpine — stable, small, well-supported by pact-broker image
+  pact-broker-db:
+    image: postgres:16-alpine
+    container_name: pf-pact-db
+    environment:
+      POSTGRES_USER: pact
+      POSTGRES_PASSWORD: pact_secret
+      POSTGRES_DB: pact_broker
+    volumes:
+      - pact-broker-db:/var/lib/postgresql/data
+    networks:
+      - forge-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pact -d pact_broker"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ─── Pact Broker ─────────────────────────────────────────────────────────────
+  # Image is on GitHub Container Registry (ghcr.io) — NOT Docker Hub.
+  # Tag format: <image-semver>-pactbroker<gem-version>
+  # Latest stable April 2026: 2.137.0-pactbroker2.118.0
+  # Dashboard: http://localhost:9292  Login: pact_user / pact_password
+  pact-broker:
+    image: ghcr.io/pact-foundation/pact-broker:2.137.0-pactbroker2.118.0
+    container_name: pf-pact-broker
+    ports:
+      - "9292:9292"
+    environment:
+      PACT_BROKER_DATABASE_URL: "postgres://pact:pact_secret@pact-broker-db/pact_broker"
+      PACT_BROKER_BASIC_AUTH_USERNAME: pact_user
+      PACT_BROKER_BASIC_AUTH_PASSWORD: pact_password
+      PACT_BROKER_BASIC_AUTH_READ_ONLY_USERNAME: pact_reader
+      PACT_BROKER_BASIC_AUTH_READ_ONLY_PASSWORD: pact_reader
+      PACT_BROKER_LOG_LEVEL: INFO
+      PACT_BROKER_ALLOW_PUBLIC_READ: "true"
+    networks:
+      - forge-net
+    depends_on:
+      pact-broker-db:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9292/diagnostic/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s

@@ -1,0 +1,26 @@
+# ─── CODEOWNERS ──────────────────────────────────────────────────────────────
+# Controls which GitHub accounts are auto-requested to review PRs
+# that touch specific paths. Requires branch protection to enforce.
+#
+# Format: <path-pattern>  <@owner-or-team>
+# Replace qa-ashutosh with your actual GitHub handle.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Default owner — everything not matched below
+*                                   @qa-ashutosh
+
+# CI/CD pipeline configs — architect-level review required
+.github/                            @qa-ashutosh
+.releaserc.json                     @qa-ashutosh
+docker-compose.yml                  @qa-ashutosh
+
+# Service: users-api
+services/users-api/                 @qa-ashutosh
+
+# Service: orders-api
+services/orders-api/                @qa-ashutosh
+
+# Documentation
+docs/                               @qa-ashutosh
+README.md                           @qa-ashutosh
+CONTRIBUTING.md                     @qa-ashutosh

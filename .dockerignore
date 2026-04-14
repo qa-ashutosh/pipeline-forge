@@ -1,0 +1,45 @@
+# Root .dockerignore — applies when build context is the repo root
+# Keeps the Docker build context lean by excluding non-essential files
+
+# Dependencies (will be installed fresh inside the image)
+node_modules
+services/*/node_modules
+
+# Build outputs
+services/*/dist
+services/*/coverage
+services/*/.nyc_output
+
+# Logs
+*.log
+logs
+
+# Test outputs
+junit.xml
+test-results
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Git
+.git
+.gitignore
+
+# CI/CD config (not needed inside images)
+.github
+.husky
+.releaserc.json
+commitlint.config.js
+
+# Docs and meta
+docs
+README.md
+CONTRIBUTING.md
+CHANGELOG.md
+LICENSE
+
+# Docker config
+docker-compose.yml
+services/*/.dockerignore

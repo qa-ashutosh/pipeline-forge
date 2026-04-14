@@ -1,0 +1,70 @@
+name: Bug Report
+description: Something is broken or behaving unexpectedly
+title: "fix: <short description>"
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please fill in as much detail as possible.
+
+  - type: dropdown
+    id: service
+    attributes:
+      label: Affected service
+      options:
+        - users-api
+        - orders-api
+        - CI/CD pipeline
+        - Docker / docker-compose
+        - Pact Broker
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the bug.
+      placeholder: "When I call GET /api/v1/users/usr_001 I get a 500 instead of 200..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+      placeholder: "I expected a 200 response with user data."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. docker compose up
+        2. curl http://localhost:3001/api/v1/users/usr_001
+        3. See 500 error
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or output
+      render: shell
+
+  - type: input
+    id: node-version
+    attributes:
+      label: Node.js version
+      placeholder: "24.x"
+
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: "macOS 15, Ubuntu 24.04, Windows 11..."

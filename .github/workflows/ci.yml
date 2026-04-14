@@ -1,0 +1,174 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+      - 'release/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+
+# Cancel in-progress runs on the same branch when a new push arrives
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '24'
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────
+  # JOB 1: Lint, Format & Dependency Audit
+  #
+  # npm workspaces note: there is ONE root package-lock.json that
+  # covers all services. Always run `npm ci` from the repo root —
+  # never from inside a service subdir. Service subdirs have no
+  # individual lock files.
+  # ─────────────────────────────────────────────────────────────────
+  lint-format:
+    name: Lint & Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install all workspace dependencies
+        run: npm ci
+
+      - name: Audit production dependencies
+        # --omit=dev audits only what ships inside Docker production images
+        # --audit-level=high fails on high/critical in our application packages
+        # --workspace scopes the audit to each service independently
+        run: |
+          npm audit --omit=dev --audit-level=high --workspace=services/users-api
+          npm audit --omit=dev --audit-level=high --workspace=services/orders-api
+
+      - name: Check formatting (Prettier)
+        run: npm run format:check
+
+      - name: Lint all workspaces
+        run: npm run lint
+
+  # ─────────────────────────────────────────────────────────────────
+  # JOB 2: Build & Test — users-api
+  # ─────────────────────────────────────────────────────────────────
+  build-test-users-api:
+    name: Build & Test · users-api
+    runs-on: ubuntu-latest
+    needs: lint-format
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install all workspace dependencies
+        run: npm ci
+
+      - name: TypeScript compile check
+        working-directory: services/users-api
+        run: npm run build
+
+      - name: Run tests with coverage
+        working-directory: services/users-api
+        run: npm run test:coverage
+        env:
+          NODE_ENV: test
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-users-api
+          path: services/users-api/coverage/
+          retention-days: 7
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-users-api
+          path: services/users-api/dist/
+          retention-days: 7
+
+  # ─────────────────────────────────────────────────────────────────
+  # JOB 3: Build & Test — orders-api
+  # ─────────────────────────────────────────────────────────────────
+  build-test-orders-api:
+    name: Build & Test · orders-api
+    runs-on: ubuntu-latest
+    needs: lint-format
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install all workspace dependencies
+        run: npm ci
+
+      - name: TypeScript compile check
+        working-directory: services/orders-api
+        run: npm run build
+
+      - name: Run tests with coverage
+        working-directory: services/orders-api
+        run: npm run test:coverage
+        env:
+          NODE_ENV: test
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-orders-api
+          path: services/orders-api/coverage/
+          retention-days: 7
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-orders-api
+          path: services/orders-api/dist/
+          retention-days: 7
+
+  # ─────────────────────────────────────────────────────────────────
+  # JOB 4: CI Gate
+  # Single named job branch protection checks against.
+  # ─────────────────────────────────────────────────────────────────
+  ci-gate:
+    name: CI Gate
+    runs-on: ubuntu-latest
+    needs:
+      - lint-format
+      - build-test-users-api
+      - build-test-orders-api
+    if: always()
+    steps:
+      - name: Evaluate all required jobs
+        run: |
+          if [[ "${{ needs.lint-format.result }}"           != "success" || \
+                "${{ needs.build-test-users-api.result }}"  != "success" || \
+                "${{ needs.build-test-orders-api.result }}" != "success" ]]; then
+            echo "One or more required CI jobs failed."
+            echo "  lint-format:           ${{ needs.lint-format.result }}"
+            echo "  build-test-users-api:  ${{ needs.build-test-users-api.result }}"
+            echo "  build-test-orders-api: ${{ needs.build-test-orders-api.result }}"
+            exit 1
+          fi
+          echo "All CI jobs passed."

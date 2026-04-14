@@ -1,0 +1,55 @@
+name: Feature Request
+description: Propose a new pipeline pattern, service feature, or improvement
+title: "feat: <short description>"
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template to propose a new feature or improvement to pipeline-forge.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - CI/CD pipeline pattern
+        - users-api
+        - orders-api
+        - Testing (unit / contract / load)
+        - Security scanning
+        - Observability
+        - Documentation
+        - Developer experience
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      placeholder: "Currently there is no example of blue/green deployment in the pipeline..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      placeholder: "Add a Stage X that demonstrates a blue/green Helm rollout using..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      placeholder: "I considered canary deployment but blue/green is more universally understood..."
+
+  - type: checkboxes
+    id: fork-ready
+    attributes:
+      label: Fork-readiness
+      options:
+        - label: This feature should work out of the box when someone forks the repo
